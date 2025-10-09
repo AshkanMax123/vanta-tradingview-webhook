@@ -7,8 +7,8 @@ const port = process.env.PORT || 10000;
 app.use(bodyParser.json());
 
 app.post('/', (req, res) => {
-  console.log('📩 Alert received:\n', JSON.stringify(req.body, null, 2));
-  res.status(200).send('Webhook received!');
+  console.log('📩 Alert received:', req.body);  // This will show in Render logs
+  res.status(200).send('✅ Webhook received');
 });
 
 app.listen(port, () => {
