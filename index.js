@@ -1,18 +1,17 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+const express = require("express");
+const bodyParser = require("body-parser");
 const app = express();
-
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 10000;
 
 app.use(bodyParser.json());
 
-app.post('/', (req, res) => {
-  console.log(`🔥 ALERT: ${JSON.stringify(req.body)}`);
-  res.send('🚨 Webhook received');
+app.post("/", (req, res) => {
+  console.log("🚨 Alert received:", req.body);
+  res.send("✅ Webhook received");
 });
 
-app.get('/', (req, res) => {
-  res.send('✅ Server is live and tracking OPEN alerts.');
+app.get("/", (req, res) => {
+  res.send("✅ Server is live 🎯");
 });
 
 app.listen(PORT, () => {
