@@ -1,8 +1,9 @@
 {
   "name": "vanta-tradingview-webhook",
   "version": "1.0.0",
-  "description": "Webhook for TradingView alerts",
+  "description": "Webhook server for TradingView alerts and GitHub logging.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
