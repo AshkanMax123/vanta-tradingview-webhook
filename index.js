@@ -13,26 +13,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Simple test route
 app.get("/", (req, res) => {
-  res.send("Vanta Webhook is live and waiting for TradingView data.");
+  res.send("✅ Vanta Webhook is live and waiting for TradingView data.");
 });
 
 // Main webhook endpoint
 app.post("/", async (req, res) => {
   try {
     const data = req.body;
-    console.log("✅ Webhook received:", data);
+    console.log("📩 Webhook received:", data);
 
-    // Timestamp and log entry
+    // Timestamp + logging
     const logDir = path.resolve("./logs");
     if (!fs.existsSync(logDir)) fs.mkdirSync(logDir);
-
     const logPath = path.join(logDir, "alerts.log");
-    const logEntry = `[${new Date().toISOString()}] ${JSON.stringify(data)}\n`;
 
-    // Append to file
+    const logEntry = `[${new Date().toISOString()}] ${JSON.stringify(data)}\n`;
     fs.appendFileSync(logPath, logEntry);
 
-    // Respond OK
     res.status(200).json({ status: "ok", received: true });
   } catch (err) {
     console.error("❌ Webhook error:", err);
@@ -40,4 +37,12 @@ app.post("/", async (req, res) => {
   }
 });
 
-// Fallback for unsupported ro
+// Fallback
+app.use((req, res) => {
+  res.status(404).json({ status: "error", message: "Route not found" });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Vanta Webhook running on port ${PORT}`);
+});
