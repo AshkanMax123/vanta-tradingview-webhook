@@ -1,35 +1,43 @@
-const express = require("express");
-const bodyParser = require("body-parser");
+// index.js
+import express from "express";
+import fs from "fs";
+import path from "path";
+import bodyParser from "body-parser";
+
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
-// Middleware to parse JSON
+// Middleware
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// Root route for testing
+// Simple test route
 app.get("/", (req, res) => {
-  res.send("✅ Webhook server is running.");
+  res.send("Vanta Webhook is live and waiting for TradingView data.");
 });
 
-// TradingView webhook listener
-app.post("/webhook", (req, res) => {
-  const alert = req.body;
+// Main webhook endpoint
+app.post("/", async (req, res) => {
+  try {
+    const data = req.body;
+    console.log("✅ Webhook received:", data);
 
-  // Basic logging
-  console.log("🚨 ALERT RECEIVED FROM TRADINGVIEW:");
-  console.log(JSON.stringify(alert, null, 2));
+    // Timestamp and log entry
+    const logDir = path.resolve("./logs");
+    if (!fs.existsSync(logDir)) fs.mkdirSync(logDir);
 
-  // Custom console message for easy terminal viewing
-  if (alert.ticker && alert.price) {
-    console.log(`📈 ${alert.ticker} crossed $${alert.price} — Vanta is watching.`);
-  } else {
-    console.log("⚠️ Generic alert received, format may not include ticker/price.");
+    const logPath = path.join(logDir, "alerts.log");
+    const logEntry = `[${new Date().toISOString()}] ${JSON.stringify(data)}\n`;
+
+    // Append to file
+    fs.appendFileSync(logPath, logEntry);
+
+    // Respond OK
+    res.status(200).json({ status: "ok", received: true });
+  } catch (err) {
+    console.error("❌ Webhook error:", err);
+    res.status(500).json({ status: "error", message: err.message });
   }
-
-  // Always return success to TradingView
-  res.status(200).send("✅ Alert received by Vanta.");
 });
 
-app.listen(port, () => {
-  console.log(`🚀 Vanta's webhook server is running on port ${port}`);
-});
+// Fallback for unsupported ro
